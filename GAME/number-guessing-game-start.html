@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <title>Number guessing game</title>
+
+    <style>
+      html {
+        font-family: sans-serif;
+      }
+
+      body {
+        width: 50%;
+        max-width: 800px;
+        min-width: 480px;
+        margin: 0 auto;
+      }
+
+      .lastResult {
+        color: white;
+        padding: 3px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Number guessing game</h1>
+
+    <p>We have selected a random number between 1 and 100. See if you can guess it in 10 turns or fewer. We'll tell you if your guess was too high or too low.</p>
+
+    <div class="form">
+      <label for="guessField">Enter a guess: </label><input type="text" id="guessField" class="guessField">
+      <input type="submit" value="Submit guess" class="guessSubmit">
+    </div>
+
+    <div class="resultParas">
+      <p class="guesses"></p>
+      <p class="lastResult"></p>
+      <p class="lowOrHi"></p>
+    </div>
+
+    <script>
+      let randomNumber = Math.floor(Math.random() * 100) + 1;
+      // 最初の変数 ( randomNumber ) には数学的なアルゴリズムにより計算された 1 から 100 までのランダムな数字が代入されます。
+
+      const guesses = document.querySelector('.guesses');
+      const lastResult = document.querySelector('.lastResult');
+      const lowOrHi = document.querySelector('.lowOrHi');
+
+      const guessSubmit = document.querySelector('.guessSubmit');
+      const guessField = document.querySelector('.guessField');
+
+      let guessCount = 1;
+      let resetButton;
+
+      // ページが読み込まれるとすぐ、 focus() メソッドを呼び出して、
+      // 入力フォームの <input> 要素に対して自動的にカーソル (フォーカス) を設定しています。
+      guessField.focus();
+
+// この関数にはプレイヤーの予想が正しいかどうかを調べて適切に返事をすることを望みます。
+// 関数は再利用可能なコードのかたまりです。何度も実行することができ、同じコードを書く手間を省けます。これはとても便利です
+
+      function checkGuess(){
+        // userGuess という変数を宣言して、現在のテキストフィールドに入力された値をセットしています。
+        // そして、組み込みの Number() 関数を呼び出して、テキストフィールドに入力された値が間違いなく数値であることも確認しています。
+        let userGuess = Number(guessField.value);
+        if (guessCount === 1){
+          guesses.textContent = '前回の予想:';
+        }
+        guesses.textContent += userGuess + '';
+
+        if(userGuess === randomNumber){
+          lastResult.textContent = 'おめでとう！正解です！';
+          lastResult.style.backgroundColor = 'green';
+          lowOrHi.textContent = '';
+          setGameOver();
+        }else if (guessCount === 10){
+          lastResult.textContent = '!!!ゲームオーバー!!!';
+          setGameOver();
+        }else{
+          lastResult.textContent = '間違いです！';
+          lastResult.style.backgroundColor = 'red';
+          if(userGuess < randomNumber){
+            lowOrHi.textContent = '今の予想は小さすぎです！もっと大きな数字です！';
+          }else if(userGuess > randomNumber){
+            lowOrHi.textContent = '今の予想は大きすぎです！もっと小さな数字です！';
+          }
+        }
+        
+        //最後の 3行 (26行目～28行目) は、次の予想の入力を受け取るための準備です。
+        // guessCount 変数に 1 を加算して、プレイヤーの予想回数を数えます。
+        // (++ はインクリメント演算子で、変数に対して 1 だけインクリメント(加算)します。) 
+        // そして、入力フォームのテキストフィールドを空にしてからフォーカスを当て、プレイヤーの次の入力に備えます。
+         
+        //
+        guessCount++;
+        guessField.value = '';
+        guessField.focus();
+      }
+      // イベントが発生したことを聞き取る構成がイベントリスナー。checkGuessを呼び出す。
+      // guessSubmit ボタンに対して、イベントリスナーを追加しました。
+      // これは発生したことを知りたいイベントの種類 (この場合は click)と、
+      // イベントが発生した場合に実行するコード (この場合は checkGuess()) の 2 つの入力値 (引数と言います) を取る関数     
+      guessSubmit.addEventListener('click', checkGuess);
+
+      // ゲームの機能を完成させる
+      function setGameOver(){
+        guessField.disabled = true;
+        guessSubmit.disabled = true;
+        resetButton = document.createElement('button');
+        resetButton.textContent = '新しいゲームを始める';
+        document.body.appendChild(resetButton);
+        resetButton.addEventListener('click', resetGame);
+      }      
+
+      function resetGame(){
+        guessCount = 1;
+
+        // 情報段落のすべてを消去します。
+        var resetParas = document.querySelectorAll('.resultParas p');
+        
+        // ループはプログラミングにおいてとても重要な概念です。
+        // ある条件に達するまで何度も何度もコードを繰り返し実行することができます。
+        
+
+        // このコードは <div class="resultParas"> に含まれるすべての <p> 要素を
+        // querySelectorAll() というメソッドを使用して取得しています。
+        //そしてループを使用してその一つ一つの要素の中身を消去しています。
+        for(var i = 0 ; i < resetParas.length ; i++){
+          resetParas[i].textContent = '';
+        }
+        // リセットボタンをページから削除します。
+        resetButton.parentNode.removeChild(resetButton);
+        
+        // 入力フォームの要素を使用可能にして、新しい予想が入力できるようにテキストフィールドを空にしてフォーカスを設定します。
+        
+        guessField.disabled = false;
+        guessSubmit.disbled = false;
+        guessFiels.value = '';
+        guessField.focus();
+
+        lastResult.styl.backgroundColor = 'white';
+
+        randomNumber = Math.floor(Math.random() * 100) + 1;
+
+      }
+    </script>
+  </body>
+</html>
